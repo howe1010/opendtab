@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Opened Tabs",
+  "version": "1.0.0",
+  "description": "在一个页面中展示所有已打开的标签页，按域名分组",
+  "permissions": ["tabs", "bookmarks", "history"],
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

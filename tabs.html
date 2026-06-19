@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Opened Tabs</title>
+  <link rel="stylesheet" href="tabs.css">
+</head>
+<body>
+  <header class="toolbar">
+    <h1 class="logo">Opened Tabs</h1>
+    <nav class="view-nav">
+      <button class="nav-tab active" data-view="tabs">打开标签页</button>
+      <button class="nav-tab" data-view="favorites">收藏夹</button>
+      <button class="nav-tab" data-view="history">历史记录</button>
+    </nav>
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="search" placeholder="搜索标签页..." autofocus>
+    </div>
+    <div class="stats" id="stats"></div>
+    <button class="toolbar-btn" id="refresh-btn" title="刷新标签页列表">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 18.4-4.5"/><path d="M21.5 12.5a10 10 0 0 1-18.4 4.5"/>
+      </svg>
+    </button>
+    <button class="toolbar-btn theme-toggle" id="theme-toggle" title="切换主题">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </header>
+  <main id="card-grid"></main>
+
+  <!-- 收藏夹视图 -->
+  <section id="favorites-view" class="hidden">
+    <div class="fav-toolbar">
+      <div class="fav-breadcrumb" id="fav-breadcrumb">
+        <span class="crumb" data-id="">根目录</span>
+      </div>
+      <button class="fav-btn" id="fav-expand-btn" title="展开/折叠子文件夹内容">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+        </svg>
+        <span id="fav-expand-label">展开子文件夹</span>
+      </button>
+      <button class="fav-btn" id="new-folder-btn" title="新建文件夹">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+        </svg>
+        新建文件夹
+      </button>
+    </div>
+    <div id="fav-grid"></div>
+  </section>
+
+  <!-- 历史记录视图 -->
+  <section id="history-view" class="hidden">
+    <div class="hist-toolbar">
+      <div class="hist-range-btns">
+        <button class="hist-range" data-range="today">今天</button>
+        <button class="hist-range active" data-range="week">最近 7 天</button>
+        <button class="hist-range" data-range="month">最近 30 天</button>
+      </div>
+      <div class="hist-group-btns">
+        <button class="hist-group active" data-group="date">按日期</button>
+        <button class="hist-group" data-group="domain">按域名</button>
+      </div>
+      <button class="fav-btn" id="clear-history-btn" title="清除浏览记录">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        清除记录
+      </button>
+    </div>
+    <div id="history-grid"></div>
+  </section>
+
+  <!-- 模态框 -->
+  <div class="modal-overlay hidden" id="modal">
+    <div class="modal">
+      <h3 class="modal-title" id="modal-title">新建文件夹</h3>
+      <input type="text" class="modal-input" id="modal-input" placeholder="名称">
+      <div class="modal-actions">
+        <button class="btn-cancel" id="modal-cancel">取消</button>
+        <button class="btn-primary" id="modal-confirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="storage.js"></script>
+  <script src="favorites.js"></script>
+  <script src="favorites-ui.js"></script>
+  <script src="history.js"></script>
+  <script src="history-ui.js"></script>
+  <script src="tabs.js"></script>
+</body>
+</html>
